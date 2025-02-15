@@ -20,7 +20,7 @@
         </div>
         <h5  class="link">محمد سالم</h5>
         <a href="../pages/login.php" class="link link-logout">تسجيل الدخول</a>
-        <a href="../pages/login.php" class="link link-logout">لوحه التحكم</a>
+        <a href="http://localhost/Project-php-simple-report-emp/pages/dashboard/add-criteria.php" class="link link-logout">لوحه التحكم</a>
     </nav>
 </body>
 
