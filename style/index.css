@@ -1,0 +1,23 @@
+.btn-index {
+    background-color: #116677;
+    text-align: center;
+    color: #fff;
+    text-decoration: none;
+    font-size: 35px;
+    padding: 10px 20px;
+    width: 400px;
+    height: 200px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.div-index {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 20px;
+}

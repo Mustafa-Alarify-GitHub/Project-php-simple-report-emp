@@ -1,0 +1,63 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  display: flex;
+  direction: rtl;
+}
+
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background-color: #116677;
+  color: white;
+  padding-top: 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  text-align: center;
+}
+
+.sidebar h2 {
+  margin-bottom: 30px;
+  font-size: 22px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  padding: 15px;
+}
+
+.sidebar ul li a {
+  color: white;
+  text-decoration: none;
+  display: block;
+  font-size: 18px;
+  transition: 0.3s;
+}
+
+.sidebar ul li a:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+}
+
+.content {
+  flex-grow: 1; /* يسمح للعنصر بأخذ كل المساحة المتاحة */
+  min-height: 100vh; /* يجعل العنصر يأخذ كامل ارتفاع الشاشة */
+  display: flex;
+  justify-content: center; /* يوسّط العناصر أفقيًا */
+  align-items: center; /* يوسّط العناصر عموديًا */
+}
+
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 200px;
+  }
+  .content {
+    margin-right: 200px;
+  }
+}
