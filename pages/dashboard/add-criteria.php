@@ -1,4 +1,12 @@
+<?php
+include "../../config/connect.php";
+$stmt = $con->prepare("
+    SELECT * FROM criteria
 
+");
+$stmt->execute();
+$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
 <!DOCTYPE html>
 <html lang="ar">
 
@@ -16,7 +24,7 @@
     <div class="sidebar">
         <h2>لوحة التحكم</h2>
         <ul>
-        <li><a href="../"> الرئيسية</a></li>
+            <li><a href="../"> الرئيسية</a></li>
             <li><a href="/Project-php-simple-report-emp/pages/dashboard/add-criteria.php"> إضافة معيار جديد</a></li>
             <li><a href="/Project-php-simple-report-emp/pages/dashboard/add-indicators.php"> أداره الموشرات</a></li>
             <li><a href="/Project-php-simple-report-emp/pages/dashboard/show-emp.php"> قائمة الموظفين</a></li>
@@ -27,7 +35,7 @@
         </ul>
     </div>
 
-       
+
     <div class="container">
         <h3>إضافة معيار جديد</h3>
 
@@ -48,7 +56,17 @@
                 </tr>
             </thead>
             <tbody id="criteriaTable">
-
+                <?php
+                foreach ($data as $key => $value) {
+                    echo "<tr>
+                                <td>" . $value['id'] . "</td>
+                                <td>" . $value['name'] . "</td>
+                                <td>
+                                    <a href='edit-emp.php?id=" . $value['id'] . "' class='edit'>تعديل</a>
+                                    <a href='delete-emp.php?id=" . $value['id'] . "' class='delete'>حذف</a>
+                                </td>";
+                }
+                ?>
             </tbody>
         </table>
     </div>

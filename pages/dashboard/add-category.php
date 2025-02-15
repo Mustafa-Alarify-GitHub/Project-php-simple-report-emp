@@ -1,3 +1,12 @@
+<?php
+include "../../config/connect.php";
+$stmt = $con->prepare("
+      SELECT * FROM categorys 
+
+");
+$stmt->execute();
+$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
 <!DOCTYPE html>
 <html lang="ar">
 
@@ -46,7 +55,17 @@
                 </tr>
             </thead>
             <tbody id="criteriaTable">
-
+                <?php
+                foreach ($data as $key => $value) {
+                    echo "<tr>
+                                <td>" . $value['id'] . "</td>
+                                <td>" . $value['name'] . "</td>
+                                <td>
+                                    <a href='edit-emp.php?id=" . $value['id'] . "' class='edit'>تعديل</a>
+                                    <a href='delete-emp.php?id=" . $value['id'] . "' class='delete'>حذف</a>
+                                </td>";
+                }
+                ?>
             </tbody>
         </table>
     </div>

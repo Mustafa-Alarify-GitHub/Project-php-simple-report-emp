@@ -1,3 +1,17 @@
+<?php
+include "../../config/connect.php";
+$stmt = $con->prepare("
+SELECT
+    pointers.id,
+    pointers.name,
+    criteria.name AS criteria
+FROM
+    `pointers`
+INNER JOIN criteria ON pointers.criteria_id = criteria.id
+");
+$stmt->execute();
+$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
 <!DOCTYPE html>
 <html lang="ar">
 
@@ -57,11 +71,24 @@
                     </tr>
                 </thead>
                 <tbody id="indicatorsTable">
-                    <!-- سيتم إضافة البيانات هنا -->
-                </tbody>
+                <?php
+                    foreach ($data as $key => $value) {
+                        echo "<tr>
+                                <td>" . $value['id'] . "</td>
+                                <td>" . $value['name'] . "</td>
+                                <td>" . $value['criteria'] . "</td>
+                                <td>
+                                    <a href='edit-emp.php?id=" . $value['id'] . "' class='edit'>تعديل</a>
+                                    <a href='delete-emp.php?id=" . $value['id'] . "' class='delete'>حذف</a>
+                                </td>";
+                    }
+                    ?>                </tbody>
             </table>
         </div>
+        <style>
 
+        
+        </style>
 </body>
 
 </html>

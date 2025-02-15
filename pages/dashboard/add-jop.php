@@ -1,3 +1,12 @@
+<?php
+include "../../config/connect.php";
+$stmt = $con->prepare("
+    SELECT * FROM jobs
+
+");
+$stmt->execute();
+$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
 <!DOCTYPE html>
 <html lang="ar">
 
@@ -34,10 +43,10 @@
             <input type="text" id="job-title" placeholder="ادخل اسم الوظيفة">
         </div>
         <div class="form-group">
-         
+
         </div>
         <button>حفظ</button>
-        <!-- جدول البيانات -->
+
         <div class="table-container">
             <h2>بيانات الوظائف</h2>
             <table>
@@ -45,21 +54,21 @@
                     <tr>
                         <th>#</th>
                         <th>اسم الوظيفة</th>
+                        <th>إجراءات</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>مهندس برمجيات</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>مصمم واجهات</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>مسؤول دعم فني</td>
-                    </tr>
+                    <?php
+                    foreach ($data as $key => $value) {
+                        echo "<tr>
+                                <td>" . $value['id'] . "</td>
+                                <td>" . $value['name'] . "</td>
+                                <td>
+                                    <a href='edit-emp.php?id=" . $value['id'] . "' class='edit'>تعديل</a>
+                                    <a href='delete-emp.php?id=" . $value['id'] . "' class='delete'>حذف</a>
+                                </td>";
+                    }
+                    ?>
                 </tbody>
             </table>
         </div>
