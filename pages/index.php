@@ -11,7 +11,7 @@
 <body class="">
     <div class="screen">
         <div class="div-index">
-            <a href="./report.php">
+            <a href="./show-all-report.php">
                 <div class="btn-index">عرض تقارير</div>
             </a>
             <a href="./show-report.php">
@@ -22,3 +22,15 @@
 </body>
 
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
