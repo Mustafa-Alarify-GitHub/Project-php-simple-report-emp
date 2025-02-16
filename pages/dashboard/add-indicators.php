@@ -18,7 +18,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['indicatorName'])) {
         $message = "خطأ في الإضافة: " . $e->getMessage();
     }
 }
+if (isset($_POST['deleteIndicatorId'])) {
 
+$indicatorId = $_POST['deleteIndicatorId'];
+
+try {
+
+$stmt = $con->prepare("DELETE FROM pointers WHERE id = :id");
+
+$stmt->bindParam(':id', $indicatorId);
+
+$stmt->execute();
+
+$message = "تم حذف المؤشر بنجاح.";
+
+} catch (PDOException $e) {
+
+$message = "خطأ في الحذف: " . $e->getMessage();
+
+}
+
+}
 $searchTerm = '';
 if (isset($_POST['searchTerm'])) {
     $searchTerm = trim($_POST['searchTerm']);
