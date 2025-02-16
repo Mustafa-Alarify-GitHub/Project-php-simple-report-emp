@@ -1,95 +1,121 @@
-<!DOCTYPE html>
-<html lang="ar">
+<?php include './layout/sideBar.php'; ?>
+<?php 
+include('../../config/connect.php'); 
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إضافة معيار جديد</title>
-    <link rel="stylesheet" href="../../style/indicators.css">
-    <link rel="stylesheet" href="../../style/sidbar.css">
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['employeeName'])) {
+    $employeeName = $_POST['employeeName'];
+    $position = $_POST['position'];
+    $department = $_POST['department'];
+    $yearOfEmployment = $_POST['yearOfEmployment'];
+    // $phone = $_POST['phone'];
+    $qualifications = $_POST['qualifications'];
+    $experiences = $_POST['experiences'];
+    $courses = $_POST['courses'];
+    // $conferences = $_POST['conferences'];
+    $nationalId = $_POST['nationalId'];
 
-</head>
+    try {
+        $stmt = $con->prepare("INSERT INTO employees (name, job_id, category_id, year_of_employment, qualifications, experiences, courses, national_number) VALUES (:name, :job_id, :category_id, :year_of_employment,:qualifications, :experiences, :courses, :national_number)");
+        $stmt->bindParam(':name', $employeeName);
+        $stmt->bindParam(':job_id', $position);
+        $stmt->bindParam(':category_id', $department);
+        $stmt->bindParam(':year_of_employment', $yearOfEmployment);
+        // $stmt->bindParam(':phone', $phone);
+        $stmt->bindParam(':qualifications', $qualifications);
+        $stmt->bindParam(':experiences', $experiences);
+        $stmt->bindParam(':courses', $courses);
+        // $stmt->bindParam(':conferences', $conferences);
+        $stmt->bindParam(':national_number', $nationalId);
+        $stmt->execute();
+        $message = "تم إضافة الموظف بنجاح.";
+    } catch (PDOException $e) {
+        $message = "خطأ في الإضافة: " . $e->getMessage();
+    }
+}
 
-<body>
+$positions = $con->query("SELECT * FROM jobs")->fetchAll(PDO::FETCH_ASSOC);
 
-    <div class="sidebar">
-        <h2>لوحة التحكم</h2>
-        <ul>
-        <li><a href="../"> الرئيسية</a></li>
-            <li><a href="/Project-php-simple-report-emp/pages/dashboard/add-criteria.php"> إضافة معيار جديد</a></li>
-            <li><a href="/Project-php-simple-report-emp/pages/dashboard/add-indicators.php"> أداره الموشرات</a></li>
-            <li><a href="/Project-php-simple-report-emp/pages/dashboard/show-emp.php"> قائمة الموظفين</a></li>
-            <li><a href="/Project-php-simple-report-emp/pages/dashboard/add-emp.php"> أضافه الموظفين</a></li>
-            <li><a href="/Project-php-simple-report-emp/pages/dashboard/add-jop.php"> أضافه الوظيفة</a></li>
-            <li><a href="/Project-php-simple-report-emp/pages/dashboard/add-category.php"> أضافه قسم </a></li>
+$departments = $con->query("SELECT * FROM categorys")->fetchAll(PDO::FETCH_ASSOC);
+?>
 
-        </ul>
-    </div>
+
+<link rel="stylesheet" href="../../style/indicators.css">
 
 
     <div class="container">
             <h2>إدخال بيانات الموظفين</h2>
 
-            <form id="employeeForm">
-                <div class="form-group">
-                    <label for="employeeName">اسم الموظف:</label>
-                    <input type="text" id="employeeName" placeholder="أدخل اسم الموظف">
-                </div>
-
-                <div class="form-group">
-                    <label for="position">الوظيفة:</label>
-                    <select id="position">
-                        <option value="">اختر الوظيفة</option>
-                        <option value="مدير">مدير</option>
-                        <option value="موظف">موظف</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="department">القسم:</label>
-                    <select id="department">
-                        <option value="">اختر القسم</option>
-                        <option value="المبيعات">المبيعات</option>
-                        <option value="الموارد البشرية">الموارد البشرية</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="email">سنه التوظيف:</label>
-                    <input type="number" id="email" placeholder="2000">
-                </div>
-
-                <div class="form-group">
-                    <label for="phone">الموهلات:</label>
-                    <input type="text" id="phone" placeholder="أدخل رقم الهاتف">
-                </div>
-                <div class="form-group">
-                    <label for="">الخبرات:</label>
-                    <input type="text" id="" placeholder="">
-                </div>
-                <div class="form-group">
-                    <label for="">الدورات:</label>
-                    <input type="text" id="" placeholder="">
-                </div>
-                <div class="form-group">
-                    <label for="">ورش وموتمرات:</label>
-                    <input type="text" id="" placeholder="">
-                </div>
-                <div class="form-group">
-                    <label for="">رقم الوطني:</label>
-                    <input type="text" id="" placeholder="">
-                </div>
-          
-
-             
-
-                <button type="submit">إضافة الموظف</button>
-            </form>
-
-         
+    <form method="POST" action="">
+        <div class="form-group">
+            <label for="employeeName">اسم الموظف:</label>
+            <input type="text" name="employeeName" id="employeeName" placeholder="أدخل اسم الموظف" required>
         </div>
-    </div>
+
+        <div class="form-group">
+            <label for="position">الوظيفة:</label>
+            <select name="position" id="position" required>
+                <option value="">اختر الوظيفة</option>
+                <?php foreach ($positions as $pos): ?>
+                    <option value="<?php echo $pos['id']; ?>"><?php echo $pos['name']; ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="department">القسم:</label>
+            <select name="department" id="department" required>
+                <option value="">اختر القسم</option>
+                <?php foreach ($departments as $dept): ?>
+                    <option value="<?php echo $dept['id']; ?>"><?php echo $dept['name']; ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="yearOfEmployment">سنة التوظيف:</label>
+            <input type="number" name="yearOfEmployment" id="yearOfEmployment" placeholder="2000" required>
+        </div>
+
+        <!-- <div class="form-group">
+            <label for="phone">رقم الهاتف:</label>
+            <input type="text" name="phone" id="phone" placeholder="أدخل رقم الهاتف" required>
+        </div> -->
+
+        <div class="form-group">
+            <label for="qualifications">المؤهلات:</label>
+            <input type="text" name="qualifications" id="qualifications" placeholder="أدخل المؤهلات">
+        </div>
+
+        <div class="form-group">
+            <label for="experiences">الخبرات:</label>
+            <input type="text" name="experiences" id="experiences" placeholder="أدخل الخبرات">
+        </div>
+
+        <div class="form-group">
+            <label for="courses">الدورات:</label>
+            <input type="text" name="courses" id="courses" placeholder="أدخل الدورات">
+        </div>
+
+        <div class="form-group">
+            <label for="conferences">ورش وموتمرات:</label>
+            <input type="text" name="conferences" id="conferences" placeholder="أدخل ورش وموتمرات">
+        </div>
+
+        <div class="form-group">
+            <label for="nationalId">رقم الوطني:</label>
+            <input type="text" name="nationalId" id="nationalId" placeholder="أدخل الرقم الوطني">
+        </div>
+
+        <button type="submit">إضافة الموظف</button>
+    </form>
+
+    <?php if (isset($message)) echo "<p>$message</p>"; ?>
+</div>
 
 </body>
 
 </html>
+
+<?php
+$con = null;
+?>

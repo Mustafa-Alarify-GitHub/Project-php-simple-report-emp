@@ -1,76 +1,109 @@
+
+<?php include './layout/sideBar.php'; ?>
 <?php
-include "../../config/connect.php";
-$stmt = $con->prepare("
-      SELECT * FROM categorys 
+include('../../config/connect.php'); 
 
-");
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sectionName'])) {
+    $sectionName = $_POST['sectionName'];
+    try {
+        $stmt = $con->prepare("INSERT INTO categorys (name) VALUES (:name)");
+        $stmt->bindParam(':name', $sectionName);
+        $stmt->execute();
+        $message = "تم إضافة القسم بنجاح.";
+    } catch (PDOException $e) {
+        $message = "خطأ في الإضافة: " . $e->getMessage();
+    }
+}
+
+if (isset($_POST['deleteId'])) {
+    $id = $_POST['deleteId'];
+    try {
+        $stmt = $con->prepare("DELETE FROM categorys WHERE id = :id");
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        $message = "تم حذف القسم بنجاح.";
+    } catch (PDOException $e) {
+        $message = "خطأ في الحذف: " . $e->getMessage();
+    }
+}
+
+$searchTerm = '';
+if (isset($_POST['searchTerm'])) {
+    $searchTerm = trim($_POST['searchTerm']);
+    $sql = "SELECT * FROM categorys WHERE name LIKE :searchTerm";
+    $stmt = $con->prepare($sql);
+    $stmt->bindValue(':searchTerm', '%' . $searchTerm . '%');
+} else {
+    $sql = "SELECT * FROM categorys";
+    $stmt = $con->prepare($sql);
+}
+
 $stmt->execute();
-$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$sections = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
-<!DOCTYPE html>
-<html lang="ar">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إضافة معيار جديد</title>
-    <link rel="stylesheet" href="../../style/addCriteria.css">
-    <link rel="stylesheet" href="../../style/sidbar.css">
+<div class="container">
+    <h3>إضافة قسم جديد</h3>
 
-</head>
-
-<body>
-
-    <div class="sidebar">
-        <h2>لوحة التحكم</h2>
-        <ul>
-            <li><a href="../"> الرئيسية</a></li>
-            <li><a href="/Project-php-simple-report-emp/pages/dashboard/add-criteria.php"> إضافة معيار جديد</a></li>
-            <li><a href="/Project-php-simple-report-emp/pages/dashboard/add-indicators.php"> أداره الموشرات</a></li>
-            <li><a href="/Project-php-simple-report-emp/pages/dashboard/show-emp.php"> قائمة الموظفين</a></li>
-            <li><a href="/Project-php-simple-report-emp/pages/dashboard/add-emp.php"> أضافه الموظفين</a></li>
-            <li><a href="/Project-php-simple-report-emp/pages/dashboard/add-jop.php"> أضافه الوظيفة</a></li>
-            <li><a href="/Project-php-simple-report-emp/pages/dashboard/add-category.php"> أضافه قسم </a></li>
-        </ul>
-    </div>
-
-
-    <div class="container">
-        <h3>إضافة قسم جديد</h3>
-
+    <form method="POST" action="">
         <div class="form-group">
-            <label for="criterionName">اسم القسم:</label>
-            <input type="text" id="criterionName" placeholder="اكتب اسم المعيار هنا">
+            <label for="sectionName">اسم القسم:</label>
+            <input type="text" name="sectionName" id="sectionName" placeholder="اكتب اسم القسم هنا" required>
         </div>
+        <button type="submit">إضافة</button>
+    </form>
 
-        <button id="addCriterion">إضافة</button>
+    <?php if (isset($message)) echo "<p>$message</p>"; ?>
 
-        <h3>جميع الاقسام</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>اسم القسم</th>
-                    <th>إجراءات</th>
-                </tr>
-            </thead>
-            <tbody id="criteriaTable">
-                <?php
-                foreach ($data as $key => $value) {
+
+    <h3>بحث عن قسم</h3>
+    <form method="POST" action="">
+        <input type="text" name="searchTerm" placeholder="ابحث عن قسم..." value="<?php echo htmlspecialchars($searchTerm); ?>">
+        <button type="submit">بحث</button>
+    </form>
+
+    <h3>جميع الأقسام</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>اسم القسم</th>
+                <th>إجراءات</th>
+            </tr>
+        </thead>
+        <tbody id="criteriaTable">
+            <?php
+            if ($sections) {
+                $index = 1;
+                foreach ($sections as $row) {
                     echo "<tr>
-                                <td>" . $value['id'] . "</td>
-                                <td>" . $value['name'] . "</td>
-                                <td>
-                                    <a href='edit-emp.php?id=" . $value['id'] . "' class='edit'>تعديل</a>
-                                    <a href='delete-emp.php?id=" . $value['id'] . "' class='delete'>حذف</a>
-                                </td>";
+                            <td>{$index}</td>
+                            <td>{$row['name']}</td>
+                            <td>
+                                <form method='POST' action='' style='display:inline;'>
+                                    <input type='hidden' name='deleteId' value='{$row['id']}'>
+                                    <button class='delete-btn' type='submit' onclick='return confirm(\"هل أنت متأكد من حذف هذا القسم؟\");'>حذف</button>
+                                </form>
+                                <form method='GET' action='edit-category.php?id={$row['id']}' style='display:inline;'>
+                                    <button type='button' onclick='window.location=\"edit-category.php?id={$row['id']}\"'>تعديل</button>
+                                </form>
+                            </td>
+                          </tr>";
+                    $index++;
                 }
-                ?>
-            </tbody>
-        </table>
-    </div>
-    </div>
+            } else {
+                echo "<tr><td colspan='3'>لا توجد أقسام مضافة بعد.</td></tr>";
+            }
+            ?>
+        </tbody>
+    </table>
+</div>
+
 
 </body>
-
 </html>
+
+<?php
+$con = null;
+?>

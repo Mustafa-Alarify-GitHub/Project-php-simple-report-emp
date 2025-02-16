@@ -28,9 +28,12 @@ $username = $_SESSION["name"] ?? $_COOKIE["name"];
             </a>
             <a href="../pages/index.php" class="link">الرئيسيه</a>
         </div>
+
         <h5  class="link"><?php echo $username  ?></h5>
         <a href="../controller/logout.php" class="link link-logout">تسجيل الخروج</a>
         <a href="http://localhost/Project-php-simple-report-emp/pages/dashboard/add-criteria.php" class="link link-logout">لوحه التحكم</a>
+
+
     </nav>
 </body>
 

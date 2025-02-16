@@ -30,6 +30,20 @@ input {
   border-radius: 5px;
   margin-top: 5px;
 }
+.btna{
+  width: 50%;
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.btna:hover {
+  background-color: #0056b3;
+}
 
 button {
   width: 100%;

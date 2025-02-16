@@ -1,77 +1,124 @@
+
+<?php include './layout/sideBar.php'; ?>
+
 <?php
-include "../../config/connect.php";
-$stmt = $con->prepare("
-    SELECT * FROM criteria
+include '../../config/connect.php';
 
-");
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['criterionName'])) {
+    $criterionName = $_POST['criterionName'];
+    
+    try {
+        $stmt = $con->prepare("INSERT INTO criteria (name) VALUES (:name)");
+        $stmt->bindParam(':name', $criterionName);
+        $stmt->execute();
+        $message = "معيار جديد تم إضافته بنجاح.";
+    } catch (PDOException $e) {
+        $message = "خطأ في الإضافة: " . $e->getMessage();
+    }
+}
+
+if (isset($_POST['deleteId'])) {
+    $id = $_POST['deleteId'];
+    try {
+        $stmt = $con->prepare("DELETE FROM criteria WHERE id = :id");
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        $message = "تم حذف المعيار بنجاح.";
+    } catch (PDOException $e) {
+        $message = "خطأ في الحذف: " . $e->getMessage();
+    }
+}
+
+
+
+
+
+
+
+
+$searchTerm = '';
+if (isset($_POST['searchTerm'])) {
+    $searchTerm = trim($_POST['searchTerm']);
+    $sql = "SELECT * FROM criteria WHERE name LIKE :searchTerm";
+    $stmt = $con->prepare($sql);
+    $stmt->bindValue(':searchTerm', '%' . $searchTerm . '%');
+} else {
+    $sql = "SELECT * FROM criteria";
+    $stmt = $con->prepare($sql);
+}
+
 $stmt->execute();
-$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
-<!DOCTYPE html>
-<html lang="ar">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إضافة معيار جديد</title>
-    <link rel="stylesheet" href="../../style/addCriteria.css">
-    <link rel="stylesheet" href="../../style/sidbar.css">
-
-</head>
-
-<body>
-
-    <div class="sidebar">
-        <h2>لوحة التحكم</h2>
-        <ul>
-            <li><a href="../"> الرئيسية</a></li>
-            <li><a href="/Project-php-simple-report-emp/pages/dashboard/add-criteria.php"> إضافة معيار جديد</a></li>
-            <li><a href="/Project-php-simple-report-emp/pages/dashboard/add-indicators.php"> أداره الموشرات</a></li>
-            <li><a href="/Project-php-simple-report-emp/pages/dashboard/show-emp.php"> قائمة الموظفين</a></li>
-            <li><a href="/Project-php-simple-report-emp/pages/dashboard/add-emp.php"> أضافه الموظفين</a></li>
-            <li><a href="/Project-php-simple-report-emp/pages/dashboard/add-jop.php"> أضافه الوظيفة</a></li>
-            <li><a href="/Project-php-simple-report-emp/pages/dashboard/add-category.php"> أضافه قسم </a></li>
-
-        </ul>
-    </div>
+       
+<div class="container">
+    <h3>إضافة معيار جديد</h3>
 
 
-    <div class="container">
-        <h3>إضافة معيار جديد</h3>
-
+    <form method="POST" action="">
         <div class="form-group">
             <label for="criterionName">اسم المعيار:</label>
-            <input type="text" id="criterionName" placeholder="اكتب اسم المعيار هنا">
+            <input type="text" name="criterionName" id="criterionName" placeholder="اكتب اسم المعيار هنا" required>
         </div>
 
-        <button id="addCriterion">إضافة</button>
+        <button type="submit">إضافة</button>
+    </form>
 
-        <h3>المعايير المضافة</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>اسم المعيار</th>
-                    <th>إجراءات</th>
-                </tr>
-            </thead>
-            <tbody id="criteriaTable">
-                <?php
-                foreach ($data as $key => $value) {
-                    echo "<tr>
-                                <td>" . $value['id'] . "</td>
-                                <td>" . $value['name'] . "</td>
-                                <td>
-                                    <a href='edit-emp.php?id=" . $value['id'] . "' class='edit'>تعديل</a>
-                                    <a href='delete-emp.php?id=" . $value['id'] . "' class='delete'>حذف</a>
-                                </td>";
-                }
-                ?>
-            </tbody>
-        </table>
-    </div>
-    </div>
+    <?php if (isset($message)) echo "<p>$message</p>"; ?>
+
+        <h3>بحث عن معيار</h3>
+    <form method="POST" action="">
+        <input type="text" name="searchTerm" placeholder="ابحث عن معيار..." value="<?php echo htmlspecialchars($searchTerm); ?>">
+        <button type="submit">بحث</button>
+    </form>
+
+    <h3>المعايير المضافة</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>اسم المعيار</th>
+                <th>إجراءات</th>
+            </tr>
+        </thead>
+<tbody id="criteriaTable">
+    <?php
+    if ($results) {
+        $index = 1;
+        foreach ($results as $row) {
+            echo "<tr>
+                    <td>{$index}</td>
+                    <td>{$row['name']}</td>
+                    <td>
+                        <div style='display: flex; justify-content: center; gap: 10px;'>
+                            <form method='POST' action='' style='display:inline;'>
+                                <input type='hidden' name='deleteId' value='{$row['id']}'>
+                                <button class='btna' type='submit' onclick='return confirm(\"هل أنت متأكد من حذف هذا المعيار؟\");'>حذف</button>
+                            </form>
+                            <form method='GET' action='edit-criterion.php' style='display:inline;'>
+                                <input type='hidden' name='id' value='{$row['id']}'>
+                                <button class='btna' type='submit'>تعديل</button>
+                            </form>
+                        </div>
+                    </td>
+                  </tr>";
+            $index++;
+        }
+    } else {
+        echo "<tr><td colspan='3'>لا توجد معايير مضافة بعد.</td></tr>";
+    }
+    ?>
+</tbody>
+    </table>
+
+
+</div>
 
 </body>
-
 </html>
+
+<?php
+$con = null;
+?>
+
