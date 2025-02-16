@@ -1,27 +1,25 @@
- <!DOCTYPE html>
- <html lang="en">
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول</title>
+    <link rel="stylesheet" href="../style/login.css">
+</head>
+<body>
+    <div class="screen">
+        <div class="screen-login">
+            <h5 class="title-login">قم بتسجيل الدخول</h5>
+            <form action="../controller/login.php" method="post" class="from-login">
+                <label for="username">أسم المستخدم</label>
+                <input type="text" name="username" id="username" required>
 
- <head>
-     <meta charset="UTF-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <title>Document</title>
-     <link rel="stylesheet" href="../style/login.css">
- </head>
+                <label for="password">كلمه المرور</label>
+                <input type="password" name="password" id="password" required>
 
- <body>
-     <div class="screen">
-         <div class="screen-login">
-             <h5 class="title-login">قم بتسجيل الدخول</h5>
-             <form action="" method="post" class="from-login">
-                 <label for="">أسم المستخدم</label>
-                 <input type="text" name="" id="">
-                 <label for="">كلمه المرور</label>
-                 <input type="text" name="" id="">
-
-                 <button class="btn-add" type="submit">الدخول</button>
-             </form>
-         </div>
-     </div>
- </body>
-
- </html>
+                <button class="btn-add" type="submit">الدخول</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
