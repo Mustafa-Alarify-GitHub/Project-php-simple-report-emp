@@ -1,3 +1,13 @@
+<?php
+session_start();
+if (!isset($_SESSION["name"]) && !isset($_COOKIE["name"])) {
+    header("Location: ../pages/login.php");
+    exit();
+}
+
+$username = $_SESSION["name"] ?? $_COOKIE["name"];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -18,8 +28,8 @@
             </a>
             <a href="../pages/index.php" class="link">الرئيسيه</a>
         </div>
-        <h5  class="link">محمد سالم</h5>
-        <a href="../pages/login.php" class="link link-logout">تسجيل الدخول</a>
+        <h5  class="link"><?php echo $username  ?></h5>
+        <a href="../controller/logout.php" class="link link-logout">تسجيل الخروج</a>
         <a href="http://localhost/Project-php-simple-report-emp/pages/dashboard/add-criteria.php" class="link link-logout">لوحه التحكم</a>
     </nav>
 </body>
