@@ -11,11 +11,11 @@
 <body class="">
     <div class="screen">
         <div class="div-index">
-            <a href="">
-                <div class="btn-index">تقييم</div>
+            <a href="./report.php">
+                <div class="btn-index">عرض تقارير</div>
             </a>
             <a href="./show-report.php">
-                <div class="btn-index" href="">عرض تقارير</div>
+                <div class="btn-index" href="">تقييم</div>
             </a>
         </div>
     </div>
