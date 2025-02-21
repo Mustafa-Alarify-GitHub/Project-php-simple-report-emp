@@ -57,10 +57,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["criteria_id"])) {
                 <?php if (!empty($pointers)): ?>
                     <?php foreach ($pointers as $pointer): ?>
                         <tr>
-                            <td><input type="checkbox" class="pointer-checkbox"></td>
+                            <td><input type="checkbox"  class="pointer-checkbox"></td>
                             <td><?php echo htmlspecialchars($pointer['name']); ?></td>
                             <td>
-                                <select class="evaluation" disabled>
+                                <select class="evaluation_1" disabled>
+                                    <option value="0">0</option>
                                     <option value="0.1">.1</option>
                                     <option value="0.2">.2</option>
                                     <option value="0.3">.3</option>
