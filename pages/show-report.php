@@ -31,12 +31,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["description"])) {
     $reviewed_emp = $_POST["employee"] ?? $_SESSION["id"];
     $description = trim($_POST["description"]);
 
-    if ( !empty($description)) {
+    if (!empty($description)) {
         try {
             $stmt = $con->prepare("INSERT INTO emp_evaluation (reviewer, reviewed_emp, description) VALUES (?, ?, ?)");
             $stmt->execute([$reviewer, $reviewed_emp, $description]);
-
-            echo "<script>alert('✅ تم حفظ التقييم بنجاح!'); window.location.href = './report.php?reviewed_emp=" . $reviewed_emp . "';</script>";
+            $evaluation_id = $con->lastInsertId();
+            echo "<script>alert('✅ تم حفظ التقييم بنجاح!'); window.location.href = './report.php?reviewed_emp=" . $evaluation_id . "';</script>";
         } catch (PDOException $e) {
             echo "❌ خطأ: " . $e->getMessage();
         }
@@ -44,6 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["description"])) {
         echo "<script>alert('⚠️ يرجى اختيار الموظف وكتابة الوصف!');</script>";
     }
 }
+
 ?>
 
 <!DOCTYPE html>
