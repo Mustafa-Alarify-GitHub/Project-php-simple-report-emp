@@ -1,4 +1,3 @@
-
 <?php include './layout/sideBar.php'; ?>
 <?php
 include('../../config/connect.php'); 
