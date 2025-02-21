@@ -1,52 +1,66 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const pointerCheckboxes = document.getElementsByClassName("pointer-checkbox");
-  const evaluations1 = document.getElementsByClassName("evaluation_1");
-  const evaluations = document.getElementsByClassName("evaluation");
-  const results = document.getElementsByClassName("result");
-  const totalResult = document.getElementById("total-result");
+    const checkboxes = document.querySelectorAll('.pointer-checkbox');
+    const totalResult = document.getElementById('total-result');
+    let alertDisplayed = false; 
+    document.querySelectorAll('.evaluation_1, .evaluation').forEach(select => {
+        select.disabled = true;
+    });
 
-  function calculateTotal() {
-      let total = 0;
-      for (let i = 0; i < results.length; i++) {
-          if (pointerCheckboxes[i].checked) {
-              total += parseFloat(results[i].textContent);  
-          }
-      }
-      totalResult.textContent = total.toFixed(2);  
-  }
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            let row = this.closest('tr');
+            let importanceSelect = row.querySelector('.evaluation_1'); 
+            let ratingSelect = row.querySelector('.evaluation'); 
+            let resultCell = row.querySelector('.result');
 
-  for (let index = 0; index < pointerCheckboxes.length; index++) {
-      pointerCheckboxes[index].addEventListener("change", function () {
-          if (pointerCheckboxes[index].checked) {
-              evaluations1[index].disabled = false; 
-              evaluations[index].disabled = false;  
-          } else {
-              evaluations1[index].disabled = true;  
-              evaluations[index].disabled = true;
-              results[index].textContent = "0";    
-          }
+            if (this.checked) {
+                importanceSelect.disabled = false;  
+                ratingSelect.disabled = false;     
+            } else {
+                importanceSelect.disabled = true;  
+                ratingSelect.disabled = true;     
+                resultCell.innerText = '0';        
+            }
 
-          calculateResult(index);
-          calculateTotal();  
-      });
+            updateTotal();  
+        });
+    });
 
-      evaluations1[index].addEventListener("change", function () {
-          calculateResult(index);
-          calculateTotal(); 
-      });
+    document.querySelectorAll('.evaluation_1, .evaluation').forEach(select => {
+        select.addEventListener('change', function () {
+            let row = this.closest('tr');
+            let importanceSelect = row.querySelector('.evaluation_1'); 
+            let ratingSelect = row.querySelector('.evaluation'); 
+            let resultCell = row.querySelector('.result');
 
-      evaluations[index].addEventListener("change", function () {
-          calculateResult(index);
-          calculateTotal(); 
-      });
-  }
+            const importance = parseFloat(importanceSelect.value);
+            const rating = parseFloat(ratingSelect.value);
 
-  function calculateResult(index) {
-      const importance = parseFloat(evaluations1[index].value);
-      const rating = parseFloat(evaluations[index].value);
+            const result = importance * rating;
 
-      const result = importance * rating;
+            resultCell.innerText = result.toFixed(2);  
+            updateTotal();  
+        });
+    });
 
-      results[index].textContent = result.toFixed(2);
-  }
+    function updateTotal() {
+        let total = 0;
+
+        document.querySelectorAll('.result').forEach(resultCell => {
+            let resultValue = parseFloat(resultCell.innerText); 
+            if (!isNaN(resultValue)) {
+                total += resultValue; 
+            }
+        });
+
+        console.log('total :>> ', total);
+        totalResult.innerText = total; 
+
+        if (total > 1 && !alertDisplayed) { 
+            alert("المجموع الكلي تجاوز 1!"); 
+            alertDisplayed = true;
+        } else if (total <= 1 && alertDisplayed) {
+            alertDisplayed = false; 
+        }
+    }
 });
