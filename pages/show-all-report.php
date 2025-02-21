@@ -10,7 +10,6 @@
 <body>
 
     <div class="container">
-        <!-- شريط البحث -->
         <div class="header">
             <div class="search-box">
                 <input type="text" class="search-input" placeholder="اسم الموظف">
@@ -23,7 +22,6 @@
             </div>
         </div>
 
-        <!-- جدول البيانات -->
         <table class="data-table">
             <thead class="table-head">
                 <tr>
