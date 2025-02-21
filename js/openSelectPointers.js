@@ -1,42 +1,38 @@
-    document.querySelectorAll('.pointer-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            let row = this.closest('tr');
-            let selects = row.querySelectorAll('select');
-            let resultCell = row.querySelector('.result');
+document.addEventListener("DOMContentLoaded", function () {
+  const pointerCheckboxes = document.getElementsByClassName("pointer-checkbox");
+  const evaluations1 = document.getElementsByClassName("evaluation_1");
+  const evaluations = document.getElementsByClassName("evaluation");
+  const results = document.getElementsByClassName("result");
 
-            selects.forEach(select => {
-                select.disabled = !this.checked;
-            });
+  for (let index = 0; index < pointerCheckboxes.length; index++) {
+    pointerCheckboxes[index].addEventListener("change", function () {
+      if (pointerCheckboxes[index].checked) {
+        evaluations1[index].disabled = false;
+        evaluations[index].disabled = false;
+      } else {
+        evaluations1[index].disabled = true;
+        evaluations[index].disabled = true;
+        results[index].textContent = "0";
+      }
 
-            if (!this.checked) {
-                resultCell.innerText = '0';
-            }
-            updateTotal();
-        });
+      calculateResult(index);
     });
 
-    function updateTotal() {
-        let total = 0;
-        document.querySelectorAll('.result').forEach(resultCell => {
-            total += parseFloat(resultCell.innerText);
-        });
-        document.getElementById('total-result').innerText = total.toFixed(2);
-    }
-    document.querySelectorAll('.pointer-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            let row = this.closest('tr');
-            let selects = row.querySelectorAll('select');
-            let resultCell = row.querySelector('.result');
-
-            selects.forEach(select => {
-                select.disabled = !this.checked;
-            });
-
-            if (!this.checked) {
-                resultCell.innerText = '0';
-            }
-
-            updateTotal();
-        });
+    evaluations1[index].addEventListener("change", function () {
+      calculateResult(index);
     });
 
+    evaluations[index].addEventListener("change", function () {
+      calculateResult(index);
+    });
+  }
+
+  function calculateResult(index) {
+    const importance = parseFloat(evaluations1[index].value);
+    const rating = parseFloat(evaluations[index].value);
+
+    const result = importance * rating;
+
+    results[index].textContent = result.toFixed(2);
+  }
+});
