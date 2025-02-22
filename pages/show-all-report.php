@@ -1,12 +1,62 @@
-<?php include './layout/header.php'; ?>
+<?php
+include './layout/header.php';
+require_once "../config/connect.php";
+
+// الحصول على الـ id من الـ cookies
+$reviewerId = isset($_COOKIE['id']) ? $_COOKIE['id'] : null;
+
+if ($reviewerId) {
+    $query = "
+       SELECT
+        ee.id AS evaluation_id,
+        reviewed_emp.name AS reviewed_name,  
+        reviewer_emp.name AS reviewer_name,  
+        crit.name AS criteria_name,
+        ptr.name AS pointer_name,
+        er.rating,
+        er.relative_importance,
+        ee.description,
+        DATE(ee.id) AS review_date
+    FROM
+        employee_reviews er
+    INNER JOIN emp_evaluation ee ON
+        er.id_emp_evaluation = ee.id
+    INNER JOIN employees reviewer_emp ON
+        ee.reviewer = reviewer_emp.id
+    INNER JOIN pointers ptr ON
+        er.pointer = ptr.id
+    INNER JOIN criteria crit ON
+        ptr.criteria_id = crit.id
+    INNER JOIN employees reviewed_emp ON
+        ee.reviewed_emp = reviewed_emp.id
+    WHERE
+        reviewer_emp.id = :reviewerId
+    ORDER BY
+        ee.id DESC;
+    ";
+
+    // تحضير الاستعلام
+    $stmt = $con->prepare($query);
+    $stmt->bindParam(':reviewerId', $reviewerId, PDO::PARAM_INT);
+    $stmt->execute();
+
+    // جلب النتائج
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} else {
+    $message = "لا يوجد معرف للمراجع في الـ cookies.";
+}
+?>
+
 <!DOCTYPE html>
 <html lang="ar">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>جدول التقييم</title>
-
+    <link rel="stylesheet" href="../style/showAllRe.css">
 </head>
+
 <body>
 
     <div class="container">
@@ -15,138 +65,67 @@
                 <input type="text" class="search-input" placeholder="اسم الموظف">
                 <button class="search-btn">بحث</button>
             </div>
-            <div class="user-details">
-                <span class="user-info">الاسم</span>
-                <span class="user-info">القسم</span>
-                <span class="user-info">الوظيفة</span>
-            </div>
         </div>
 
         <table class="data-table">
             <thead class="table-head">
                 <tr>
                     <th class="table-header">#</th>
-                    <th class="table-header">اسم الشخص الذي قيم</th>
+                    <th class="table-header">اسم الموظف الذي تم تقييمه</th>
                     <th class="table-header">المعيار</th>
                     <th class="table-header">المؤشرات</th>
                     <th class="table-header">التقييم</th>
-                    <th class="table-header">المجموع</th>
-                    <th class="table-header">ABC</th>
-                    <th class="table-header">التاريخ</th>
+                    <th class="table-header">النسبة</th>
+                    <th class="table-header">التقيم</th>
                 </tr>
             </thead>
             <tbody class="table-body">
-                <tr class="table-row">
-                    <td class="table-cell">1</td>
-                    <td class="table-cell">أحمد علي</td>
-                    <td class="table-cell">الجودة</td>
-                    <td class="table-cell">الدقة</td>
-                    <td class="table-cell">5/5</td>
-                    <td class="table-cell">90%</td>
-                    <td class="table-cell">A</td>
-                    <td class="table-cell">2025-02-16</td>
-                </tr>
-                <tr class="table-row">
-                    <td class="table-cell">2</td>
-                    <td class="table-cell">محمد سالم</td>
-                    <td class="table-cell">الالتزام</td>
-                    <td class="table-cell">الحضور</td>
-                    <td class="table-cell">4/5</td>
-                    <td class="table-cell">85%</td>
-                    <td class="table-cell">B</td>
-                    <td class="table-cell">2025-02-15</td>
-                </tr>
+                <?php
+                if (isset($result) && count($result) > 0) {
+                    foreach ($result as $row) {
+                        echo "<tr class='table-row'>";
+                        echo "<td class='table-cell'>{$row['evaluation_id']}</td>";
+                        echo "<td class='table-cell'>{$row['reviewed_name']}</td>";
+                        echo "<td class='table-cell'>{$row['criteria_name']}</td>";
+                        echo "<td class='table-cell'>{$row['pointer_name']}</td>";
+                        echo "<td class='table-cell'>{$row['rating']}/5</td>";
+                        echo "<td class='table-cell'>{$row['relative_importance']}</td>";
+                        echo "<td class='table-cell'>";
+                        switch ($row['rating']) {
+                            case 5:
+                                echo "A";
+                                break;
+                            case 4:
+                                echo "B";
+                                break;
+                            case 3:
+                                echo "C";
+                                break;
+                            case 2:
+                                echo "D";
+                                break;
+                            case 1:
+                            case 0:
+                                echo "F";
+                                break;
+                            default:
+                                echo "غير محدد";
+                        }
+                        echo "</td>";
+                        echo "</tr>";
+                    }
+                } else {
+                    echo "<tr><td colspan='7' class='table-cell'>لا توجد بيانات</td></tr>";
+                }
+                ?>
             </tbody>
         </table>
     </div>
 
 </body>
-<style>
 
-
-.container {
-    margin-top: 10px !important;
-    width: 90%;
-    margin: auto;
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0px 4px 10px #555;
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.search-box {
-    display: flex;
-    align-items: center;
-}
-
-.search-input {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.search-btn {
-    background: green;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    margin-right: 5px;
-    cursor: pointer;
-    border-radius: 4px;
-}
-
-.search-btn:hover {
-    background: darkgreen;
-}
-
-.user-details {
-    display: flex;
-    gap: 15px;
-}
-
-.user-info {
-    font-weight: bold;
-}
-
-.data-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.table-head {
-    background: #116677;
-    color: white;
-}
-
-.table-header {
-    padding: 12px;
-    border: 1px solid #ddd;
-    text-align: center;
-}
-
-.table-body .table-row:nth-child(even) {
-    background: #f9f9f9;
-}
-
-.table-body .table-row:hover {
-    background: #ddd;
-}
-
-.table-cell {
-    padding: 12px;
-    border: 1px solid #ddd;
-    text-align: center;
-}
-
-</style>
 </html>
+
+<?php
+$con = null;
+?>
