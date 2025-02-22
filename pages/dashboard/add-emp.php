@@ -1,6 +1,6 @@
 <?php include './layout/sideBar.php'; ?>
-<?php 
-include('../../config/connect.php'); 
+<?php
+include('../../config/connect.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['employeeName'])) {
     $employeeName = $_POST['employeeName'];
@@ -13,9 +13,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['employeeName'])) {
     $courses = $_POST['courses'];
     // $conferences = $_POST['conferences'];
     $nationalId = $_POST['nationalId'];
+    $pass = $_POST['pass'];
 
     try {
-        $stmt = $con->prepare("INSERT INTO employees (name, job_id, category_id, year_of_employment, qualifications, experiences, courses, national_number) VALUES (:name, :job_id, :category_id, :year_of_employment,:qualifications, :experiences, :courses, :national_number)");
+        $stmt = $con->prepare("INSERT INTO employees (name, job_id, category_id, year_of_employment, qualifications, experiences, courses, national_number,`password`) VALUES (:name, :job_id, :category_id, :year_of_employment,:qualifications, :experiences, :courses, :national_number ,:password)");
         $stmt->bindParam(':name', $employeeName);
         $stmt->bindParam(':job_id', $position);
         $stmt->bindParam(':category_id', $department);
@@ -26,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['employeeName'])) {
         $stmt->bindParam(':courses', $courses);
         // $stmt->bindParam(':conferences', $conferences);
         $stmt->bindParam(':national_number', $nationalId);
+        $stmt->bindParam(':password', $pass);
         $stmt->execute();
         $message = "تم إضافة الموظف بنجاح.";
     } catch (PDOException $e) {
@@ -42,13 +44,17 @@ $departments = $con->query("SELECT * FROM categorys")->fetchAll(PDO::FETCH_ASSOC
 <link rel="stylesheet" href="../../style/indicators.css">
 
 
-    <div class="container">
-            <h2>إدخال بيانات الموظفين</h2>
+<div class="container">
+    <h2>إدخال بيانات الموظفين</h2>
 
     <form method="POST" action="">
         <div class="form-group">
             <label for="employeeName">اسم الموظف:</label>
             <input type="text" name="employeeName" id="employeeName" placeholder="أدخل اسم الموظف" required>
+        </div>
+        <div class="form-group">
+            <label for="employeeName">كلمه المرور:</label>
+            <input type="password" name="pass" id="employeeName" placeholder="أدخل كلمه المرور" required>
         </div>
 
         <div class="form-group">
@@ -76,10 +82,7 @@ $departments = $con->query("SELECT * FROM categorys")->fetchAll(PDO::FETCH_ASSOC
             <input type="number" name="yearOfEmployment" id="yearOfEmployment" placeholder="2000" required>
         </div>
 
-        <!-- <div class="form-group">
-            <label for="phone">رقم الهاتف:</label>
-            <input type="text" name="phone" id="phone" placeholder="أدخل رقم الهاتف" required>
-        </div> -->
+
 
         <div class="form-group">
             <label for="qualifications">المؤهلات:</label>
