@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 16, 2025 at 07:32 PM
+-- Generation Time: Feb 22, 2025 at 08:01 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -36,9 +36,7 @@ CREATE TABLE `categorys` (
 -- Dumping data for table `categorys`
 --
 
-INSERT INTO `categorys` (`id`, `name`) VALUES
-(1, 'إدارة'),
-(2, 'تطوير البرمجيات');
+
 
 -- --------------------------------------------------------
 
@@ -55,10 +53,6 @@ CREATE TABLE `criteria` (
 -- Dumping data for table `criteria`
 --
 
-INSERT INTO `criteria` (`id`, `name`) VALUES
-(1, 'أداء الموظف'),
-(2, 'الالتزام بالعمل'),
-(3, 'اا');
 
 -- --------------------------------------------------------
 
@@ -83,10 +77,45 @@ CREATE TABLE `employees` (
 -- Dumping data for table `employees`
 --
 
-INSERT INTO `employees` (`id`, `name`, `job_id`, `category_id`, `year_of_employment`, `qualifications`, `experiences`, `courses`, `national_number`, `password`) VALUES
-(1, 'أحمد محمد', 1, 1, 2015, 'بكالوريوس إدارة أعمال', '10 سنوات خبرة', 'دورات في القيادة والإدارة', '1234567890', NULL),
-(2, 'خالد علي', 2, 2, 2018, 'بكالوريوس علوم الحاسوب', '5 سنوات خبرة', 'دورات في تطوير الويب', '0987654321', NULL),
-(3, 'mustafa', 1, 1, NULL, 'asas', 'as', 'as', '', '123456');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `employee_reviews`
+--
+
+CREATE TABLE `employee_reviews` (
+  `id` int(11) NOT NULL,
+  `pointer` int(11) NOT NULL,
+  `relative_importance` double NOT NULL,
+  `rating` decimal(10,0) NOT NULL,
+  `id_emp_evaluation` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `employee_reviews`
+--
+
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `emp_evaluation`
+--
+
+CREATE TABLE `emp_evaluation` (
+  `id` int(11) NOT NULL,
+  `reviewer` int(11) NOT NULL,
+  `reviewed_emp` int(11) NOT NULL,
+  `description` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `emp_evaluation`
+--
+
+
 
 -- --------------------------------------------------------
 
@@ -103,9 +132,7 @@ CREATE TABLE `jobs` (
 -- Dumping data for table `jobs`
 --
 
-INSERT INTO `jobs` (`id`, `name`) VALUES
-(1, 'مدير مشروع'),
-(2, 'مهندس برمجيات');
+
 
 -- --------------------------------------------------------
 
@@ -123,9 +150,7 @@ CREATE TABLE `pointers` (
 -- Dumping data for table `pointers`
 --
 
-INSERT INTO `pointers` (`id`, `name`, `criteria_id`) VALUES
-(1, 'دقة العمل', 1),
-(2, 'الحضور والانضباط', 2);
+
 
 --
 -- Indexes for dumped tables
@@ -150,6 +175,22 @@ ALTER TABLE `employees`
   ADD PRIMARY KEY (`id`),
   ADD KEY `category_id` (`category_id`),
   ADD KEY `job_id` (`job_id`);
+
+--
+-- Indexes for table `employee_reviews`
+--
+ALTER TABLE `employee_reviews`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `pointer` (`pointer`),
+  ADD KEY `id_emp_evaluation` (`id_emp_evaluation`);
+
+--
+-- Indexes for table `emp_evaluation`
+--
+ALTER TABLE `emp_evaluation`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `reviewer` (`reviewer`),
+  ADD KEY `reviewed_emp` (`reviewed_emp`);
 
 --
 -- Indexes for table `jobs`
@@ -184,19 +225,31 @@ ALTER TABLE `criteria`
 -- AUTO_INCREMENT for table `employees`
 --
 ALTER TABLE `employees`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT for table `employee_reviews`
+--
+ALTER TABLE `employee_reviews`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+
+--
+-- AUTO_INCREMENT for table `emp_evaluation`
+--
+ALTER TABLE `emp_evaluation`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `jobs`
 --
 ALTER TABLE `jobs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `pointers`
 --
 ALTER TABLE `pointers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
@@ -208,6 +261,20 @@ ALTER TABLE `pointers`
 ALTER TABLE `employees`
   ADD CONSTRAINT `employees_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categorys` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `employees_ibfk_2` FOREIGN KEY (`job_id`) REFERENCES `jobs` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `employee_reviews`
+--
+ALTER TABLE `employee_reviews`
+  ADD CONSTRAINT `employee_reviews_ibfk_1` FOREIGN KEY (`pointer`) REFERENCES `pointers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `employee_reviews_ibfk_2` FOREIGN KEY (`id_emp_evaluation`) REFERENCES `emp_evaluation` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `emp_evaluation`
+--
+ALTER TABLE `emp_evaluation`
+  ADD CONSTRAINT `emp_evaluation_ibfk_1` FOREIGN KEY (`reviewer`) REFERENCES `employees` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `emp_evaluation_ibfk_2` FOREIGN KEY (`reviewed_emp`) REFERENCES `employees` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `pointers`
