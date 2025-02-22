@@ -55,4 +55,6 @@ Once you navigate to the URL, you can interact with the application and start us
 - Ensure that all the files inside `assets`, `config`, `controller`, etc., are placed correctly in the project structure.
 - You can customize the settings or modify the database files if needed.
 
+---
 
+**Note**: you need go to dashboard user-name : admin and password : admin.
